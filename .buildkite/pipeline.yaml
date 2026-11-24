@@ -1,28 +1,24 @@
-env:
-  GOCACHE: $HOME/.cache/go-build
-  GOMODCACHE: $HOME/.cache/go/pkg/mod
-  GOLANGCI_LINT_CACHE: $HOME/.cache/golangci-lint
-
-
 steps:
-  - group: ":knife: Lint"
+  - group: ":test_tube: Tests"
+    key: "tests"
     steps:
-      - label: ":golang: go generate"
-        key: "generate"
-        agents:
-          queue: $LARGE_RUNNER_QUEUE
-          size: $RUNNER_LARGE
-          location: "NYC"
+      - label: ":golangci-lint: lint :lint-roller:"
+        key: "lint"
         cancel_on_build_failing: true
         plugins:
-          - docker#v5.13.0:
-              image: "ghcr.io/theopenlane/build-image:latest"
-              always_pull: true
+          - docker#v5.12.0:
+              image: "golang:1.27-alpine"
+              always-pull: true
               command: ["task", "go:lint"]
-              propagate-environment: true
-              volumes:
-                - $GOCACHE:$GOCACHE
-                - $GOMODCACHE:$GOMODCACHE
-                - $GOLANGCI_LINT_CACHE:$GOLANGCI_LINT_CACHE
+              environment:
+                - "GOTOOLCHAIN=auto"
+      - label: ":golang: go test"
+        key: "go_test"
+        cancel_on_build_failing: true
+        plugins:
+          - docker#v5.12.0:
+              image: "golang:1.27-alpine"
+              always-pull: true
+              command: ["task", "go:test:cover"]
               environment:
                 - "GOTOOLCHAIN=auto"
