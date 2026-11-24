@@ -19,6 +19,6 @@ steps:
           - docker#v5.12.0:
               image: "golang:1.27-alpine"
               always-pull: true
-              command: ["go", "tool", "task", "go:test:cover"]
+              command: ["go", "tool", "task", "go:test"]
               environment:
                 - "GOTOOLCHAIN=auto"
